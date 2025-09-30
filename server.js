@@ -1,9 +1,10 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import fetch from "node-fetch";
 
-dotenv.config();
+// dotenv is NOT needed on Railway; remove it for production
+// import dotenv from "dotenv";
+// dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -13,6 +14,14 @@ app.use(express.json());
 
 // Health check
 app.get("/", (req, res) => res.send("✅ Gemini Backend is running!"));
+
+// Quick test endpoint to verify GEMINI_API_KEY is loaded
+app.get("/test-key", (req, res) => {
+  if (!process.env.GEMINI_API_KEY) {
+    return res.status(500).send("❌ GEMINI_API_KEY not found in environment");
+  }
+  res.send(`✅ GEMINI_API_KEY loaded: ${process.env.GEMINI_API_KEY.slice(0,5)}…`);
+});
 
 // Fetch available models
 async function getModels() {
